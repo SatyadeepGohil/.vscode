@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+        <h1>Counter</h1>
+        <p id="count-el"></p>
+        <button onclick="decrease()" class="custom-btn" id="btn"><span class="span">Decrease</span></button>
+        <button onclick="reset()" class="custom-btn" id="btn">Reset</button>
+        <button onclick="increase()" class="custom-btn" id="btn">Increase</button>
+    <script src="main.js"></script>
+    <div class="loader">
+        <div class="loader-bg">
+            Anything
+        </div>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <defs>
+            <filter id="liquid">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="liquid" />
+            </filter>
+        </defs>
+    </svg>
+</body>
+</html>
