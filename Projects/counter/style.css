@@ -104,34 +104,18 @@ margin: 1rem;
   border-radius: 10px;
 }
 
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+@keyframes wave {
+  0% {transform: translateY(0);}
+  25% {transform: translateY(25px);}
+  50% {transform: translateY(50px);}
+  100% {transform: translateY(0);}
 }
 
-@keyframes wave {
-  0% {
-    background-position: 0 160px;
-    background-size: 170px 300px;
-  }
-  100% {
-    background-position: 500px -18px;
-    background-size: 250px 150px;
-  }
-}
-.loader {
-  width: 120px;
-  height: 120px;
-  position: relative;
-  color: #000;
-}
-.loader-bg {
-  position: absolute;
-  animation: wave 1s ease-out forwards;
-  background: transparent repeat-x 100px/150px 300px;
-  z-index: 2;
+#wave {
+  width: 100px;
+  height: 100px;
+  background-color: #000;
+  animation: wave 2s infinite linear;
+  border-radius: 50%;
+  box-shadow: 10px 10px 10px #e5ff00;
 }
