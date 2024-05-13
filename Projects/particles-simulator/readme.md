@@ -1,0 +1,10 @@
+--Point Particles: Simulate tiny dots moving according to certain rules, like fireflies or raindrops.
+--Images/Text Particles: Use images or text elements as particles for visual effects like smoke or explosions.
+--Attraction/Repulsion: Simulate particles that attract or repel each other, like magnetic fields or swarming behaviors.
+--Brownian Motion: Simulate random particle movements mimicking microscopic phenomena.
+--Flocking/Swarming: Simulate group behaviors where particles move cohesively, like schools of fish or flocks of birds.
+--Spring Systems: Simulate interconnected particles with spring-like forces, like chains or hair.
+--Fluid Dynamics: Simulate fluid-like behavior with particle interactions, like smoke or water.
+--Collision Detection: Simulate particle collisions with bouncing or merging effects.
+--External Forces: Simulate particles reacting to external forces like gravity or wind.
+--Interactive Particles: Allow user interaction to influence particle movement, like creating ripples in water or attracting particles with the mouse.
