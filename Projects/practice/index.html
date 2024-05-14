@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <p>Window Inner Width: <span id="innerWidth"></span></p>
+    <p>Window Inner Height: <span id="innerHeight"></span></p>
+    <p>Window Outer Width: <span id="outerWidth"></span></p>
+    <p>Window Outer Height: <span id="outerHeight"></span></p>
+
+    <script>
+        $(document).ready(function () {
+            var windowInnerWidth = $(window).width();
+            var windowInnerHeight = $(window).height();
+            var windowOuterWidth = $(window).outerWidth();
+            var windowOuterHeight = $(window).outerHeight();
+
+            $("#innerWidth").text(windowInnerWidth);
+            $("#innerHeight").text(windowInnerHeight);
+            $("#outerWidth").text(windowOuterWidth);
+            $("#outerHeight").text(windowOuterHeight);
+        });
+    </script>
+</body>
+
+</html>

@@ -8,9 +8,11 @@ let mouseX = 0;
 let mouseY = 0;
 let MOUSE_ATTRACTION_DISTANCE = 10;
 let mouseInside = false;
+const windStrength = 4;
+let isScattering = false;
 
-function random() {
-    return(Math.round(Math.random() * selectedValue));
+function randomFloat(min,max) {
+    return(Math.round(Math.random() * (max - min) + min));
 }
 
 class Particles {
@@ -18,30 +20,55 @@ class Particles {
     this.x = Math.random() * canvas.width;
     this.y = Math.random() * canvas.height;
     this.radius = Math.random() * 2 + 1;
-    this.velocityX = Math.random() * 1 - 2;
-    this.velocityY = Math.random() * 1 - 2;
+
+    const randomAngle = Math.random() * Math.PI * 2;
+    const maxSpeed = 0.5;
+    this.velocityX = Math.cos(randomAngle) * maxSpeed;
+    this.velocityY = Math.sin(randomAngle) * maxSpeed;
+
     }
 
     update() {
-        this.x += this.velocityX;
-        this.y += this.velocityY;
+    this.checkCollisionX();
+    this.checkCollisionY();
+    this.x += this.velocityX += randomFloat(-0.1,0.1);
+    this.y += this.velocityY += randomFloat(-0.1,0.1);
 
-        if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
-            this.velocityX *= -1;
-        }
-        if (this.y + this.radius > canvas.height || this.y - this.radius < 0) {
-            this.velocityY *= -1;
-        }
-        this.gravity(0.1);
-        this.wind();
+    this.velocityX *= 0.9;
+    this.velocityY *= 0.9;
+
+    this.x += this.velocityX + windStrength * Math.cos(Math.random() * Math.PI * 2);
+    this.y += this.velocityY + windStrength * Math.sin(Math.random() * Math.PI * 2);
+    
+    //this.gravity(1);
     }
 
-    gravity(g) {
+    checkCollisionX() {
+    if (this.x + this.radius > canvas.width) {
+    this.x = canvas.width - this.radius;
+    this.velocityX *= -10;
+    } else if (this.x - this.radius < 0) {
+    this.x = this.radius;
+    this.velocityX *= -10;
+    }
+    }
+
+    checkCollisionY() {
+        if (this.y + this.radius > canvas.height) {
+      this.y = canvas.height - this.radius;
+      this.velocityY *= -10;
+    } else if (this.y - this.radius < 0) {
+      this.y = this.radius;
+      this.velocityY *= -10;
+    }
+    }
+
+   /*  gravity(g) {
      this.velocityY += g;
-    }
+    } */
 
-    wind () {
-        this.velocityX += 0.2;
+    wind (w) {
+        this.velocityX += w;
     }
 
     draw() {
@@ -59,56 +86,54 @@ class Particles {
             }
         }
 
+document.addEventListener('mousemove', function(event) {
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+    mouseInside = (mouseX >= 0 && mouseX <= canvas.width && mouseY >= 0 && mouseY <= canvas.height)
+});
+
+document.addEventListener("mouseout", function () {
+    mouseInside = false;
+})
+
     function animate() {
         
         requestAnimationFrame(animate);
 
         ctx.clearRect(0,0,canvas.width,canvas.height);
-
         particles.forEach(particles => {
+            if(mouseInside) {
         const dx = mouseX - particles.x;
         const dy = mouseY - particles.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
+        const attractionFactor = distance < MOUSE_ATTRACTION_DISTANCE ? -1 : 1;
 
-         if (mouseInside) {
-            if (distance < MOUSE_ATTRACTION_DISTANCE) {
-        particles.velocityX = -dx / distance;
-        particles.velocityY = -dy / distance;
+        particles.velocityX = attractionFactor * dx / distance;
+        particles.velocityY = attractionFactor * dy / distance;
+        } else if (!isScattering) {
+            isScattering = true;
+            particles.velocityX += randomFloat(-5,5);
+            particles.velocityY += randomFloat(-5,5);
         }
-        else {
-        particles.velocityX = dx / distance;
-        particles.velocityY = dy / distance;
-        }
-         }
-        else{
-        particles.velocityX = Math.random() * 1 - 2;
-        particles.velocityY = Math.random() * 1 - 2;
-        }
+        particles.velocityX *= 1;
+        particles.velocityY *= 1;
         particles.update();
         particles.draw();
         });
 
+        if (mouseInside) {
         ctx.beginPath();
-        ctx.moveTo(particles.x,particles.y);
-       ctx.arc(mouseX,mouseY,this.radius, 0,Math.PI * 2);
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "blue";
         ctx.fill();
         ctx.closePath();
+        }
+        if (!mouseInside) {
+        ctx.beginPath();
+        ctx.fillStyle = "black";
+        ctx.fill();
+        ctx.closePath();
+        }
     }
-
-    function mouseMovement(event) {
-    mouseX = event.clientX;
-    mouseY = event.clientY;
-
-    mouseInside = mouseX >= 0 && mouseX <= canvas.width && mouseY >= 0 && mouseY <= canvas.height;
-    }
-
-    document.addEventListener("mousemove", mouseMovement);
-
-     window.addEventListener("resize", () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-       })
 
 init();
 animate();
