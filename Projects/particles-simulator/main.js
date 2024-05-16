@@ -3,29 +3,25 @@ let ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 let particles = [];
-let selectedValue = 3000;
+let selectedValue = 2500;
 let mouseX = 0;
 let mouseY = 0;
 let mouseInside = false;
 let engine;
 let world;
+const times = [];
+let fps = document.getElementById("fps");
+let gravityON = true;
+let windOn = false;
 
+let gravity =document.getElementById("gravity").addEventListener("click", function() {
+    gravityON = !gravityON;
 
-window.addEventListener("resize", function () {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    Matter.World.clear(world);
-    particles = [];
-    init();
 });
-/* function reset() {
-    particles.forEach((particle, index) => {
-        Matter.World.remove(world, particle);
-    });
-    particles = [];
-    particlePositions = [];
-} */
+
+let wind = document.getElementById("wind").addEventListener("click", function() {
+    windOn = !windOn;
+});
 
 function init() {
     engine = Matter.Engine.create();
@@ -36,13 +32,13 @@ function init() {
     const green = Math.floor(Math.random() * 255);
     const color = `rgb(${red},${green},${blue})`;
         const particle = Matter.Bodies.circle(
-            Math.random() * canvas.width,
+            Math.random()* canvas.width,
             Math.random() * canvas.height,
-            Math.random() * 2 + 1,
+            Math.random() * 3 + 1,
             { restitution: 0.8,
-                friction: 0.1,
-                frictionAir: 0.0001,
-                density: 0.7,
+                friction: 0.001,
+                frictionAir: 0.01,
+                density: 0.01,
                 color: color
              }
         );
@@ -51,17 +47,41 @@ function init() {
     }
     Matter.Engine.run(engine);
     Matter.World.add(world, [
-        Matter.Bodies.rectangle(canvas.width/2 ,canvas.height,canvas.width,50,{isStatic: true}),
-        Matter.Bodies.rectangle(canvas.width/2,0,canvas.width,50,{isStatic: true}),
-        Matter.Bodies.rectangle(0,canvas.height/2, 50,canvas.height, {isStatic: true}),
-        Matter.Bodies.rectangle(canvas.width, canvas.height / 2, 50, canvas.height, {isStatic: true})
+        Matter.Bodies.rectangle(canvas.width/2 ,canvas.height,canvas.width,40,{isStatic: true}),
+        Matter.Bodies.rectangle(canvas.width/2,0,canvas.width,40,{isStatic: true}),
+        Matter.Bodies.rectangle(0,canvas.height/2, 40,canvas.height, {isStatic: true}),
+        Matter.Bodies.rectangle(canvas.width, canvas.height / 2, 40, canvas.height, {isStatic: true})
     ]);
 }
+
+window.addEventListener("resize", function () {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    Matter.World.clear(world);
+    particles = [];
+    init();
+});
+
+function refreshLoop() {
+    window.requestAnimationFrame(() => {
+        const now = performance.now();
+        while (times.length > 0 && times[0] <= now - 1000) {
+            times.shift();
+        }
+        times.push(now);
+        fps.innerText = `Fps :${times.length}`;
+        refreshLoop();
+    })
+}
+
+refreshLoop();
+
 
 document.addEventListener('mousemove', function(event) {
     mouseX = event.clientX;
     mouseY = event.clientY;
-    mouseInside = (mouseX >= 0 && mouseX <= canvas.width && mouseY >= 0 && mouseY <= canvas.height)
+    mouseInside = (mouseX >= 0 && mouseX <= canvas.width && mouseY >= 0 && mouseY <= canvas.height);
 });
 
 document.addEventListener("mouseout", function () {
@@ -107,14 +127,22 @@ function drawWindDirection(mouseX,mouseY) {
     ctx.closePath();
 }
 
+
 function animate() {
     requestAnimationFrame(animate);
-
     particles.forEach(particle => {
-        if (mouseInside) {
+            if (windOn && mouseInside) {
             const windForce = calculateWindForce(mouseX, mouseY);
             Matter.Body.applyForce(particle, particle.position, windForce);
-        }
+            }
+            if (gravityON) {
+                const forceX = Matter.Common.random(-0.001,0.001);
+                const forceY = Matter.Common.random(-0.001,0.001);
+                Matter.Body.applyForce(particle,particle.position, { x: forceX, y: forceY});   
+            }
+            else {
+                Matter.Body.applyForce(particle,particle.position, { x: 0, y:0});
+            }
     });
     draw(particles);
 }
@@ -130,7 +158,7 @@ function draw(particles) {
     ctx.closePath();
     });
 
-    if(mouseInside) {
+    if(mouseInside && windOn) {
         drawWindDirection(mouseX,mouseY);
     }
 }
