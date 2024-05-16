@@ -3,88 +3,60 @@ let ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 let particles = [];
-let selectedValue = 1000;
+let selectedValue = 3000;
 let mouseX = 0;
 let mouseY = 0;
-let MOUSE_ATTRACTION_DISTANCE = 10;
 let mouseInside = false;
-const windStrength = 4;
-let isScattering = false;
+let engine;
+let world;
 
-function randomFloat(min,max) {
-    return(Math.round(Math.random() * (max - min) + min));
+
+window.addEventListener("resize", function () {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    Matter.World.clear(world);
+    particles = [];
+    init();
+});
+/* function reset() {
+    particles.forEach((particle, index) => {
+        Matter.World.remove(world, particle);
+    });
+    particles = [];
+    particlePositions = [];
+} */
+
+function init() {
+    engine = Matter.Engine.create();
+    world = engine.world;
+    for (let i = 0; i < selectedValue; i++) {
+    const red = Math.floor(Math.random() * 255);
+    const blue = Math.floor(Math.random() * 255);
+    const green = Math.floor(Math.random() * 255);
+    const color = `rgb(${red},${green},${blue})`;
+        const particle = Matter.Bodies.circle(
+            Math.random() * canvas.width,
+            Math.random() * canvas.height,
+            Math.random() * 2 + 1,
+            { restitution: 0.8,
+                friction: 0.1,
+                frictionAir: 0.0001,
+                density: 0.7,
+                color: color
+             }
+        );
+        particles.push(particle);
+        Matter.World.add(world, particle);
+    }
+    Matter.Engine.run(engine);
+    Matter.World.add(world, [
+        Matter.Bodies.rectangle(canvas.width/2 ,canvas.height,canvas.width,50,{isStatic: true}),
+        Matter.Bodies.rectangle(canvas.width/2,0,canvas.width,50,{isStatic: true}),
+        Matter.Bodies.rectangle(0,canvas.height/2, 50,canvas.height, {isStatic: true}),
+        Matter.Bodies.rectangle(canvas.width, canvas.height / 2, 50, canvas.height, {isStatic: true})
+    ]);
 }
-
-class Particles {
-    constructor() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.radius = Math.random() * 2 + 1;
-
-    const randomAngle = Math.random() * Math.PI * 2;
-    const maxSpeed = 0.5;
-    this.velocityX = Math.cos(randomAngle) * maxSpeed;
-    this.velocityY = Math.sin(randomAngle) * maxSpeed;
-
-    }
-
-    update() {
-    this.checkCollisionX();
-    this.checkCollisionY();
-    this.x += this.velocityX += randomFloat(-0.1,0.1);
-    this.y += this.velocityY += randomFloat(-0.1,0.1);
-
-    this.velocityX *= 0.9;
-    this.velocityY *= 0.9;
-
-    this.x += this.velocityX + windStrength * Math.cos(Math.random() * Math.PI * 2);
-    this.y += this.velocityY + windStrength * Math.sin(Math.random() * Math.PI * 2);
-    
-    //this.gravity(1);
-    }
-
-    checkCollisionX() {
-    if (this.x + this.radius > canvas.width) {
-    this.x = canvas.width - this.radius;
-    this.velocityX *= -10;
-    } else if (this.x - this.radius < 0) {
-    this.x = this.radius;
-    this.velocityX *= -10;
-    }
-    }
-
-    checkCollisionY() {
-        if (this.y + this.radius > canvas.height) {
-      this.y = canvas.height - this.radius;
-      this.velocityY *= -10;
-    } else if (this.y - this.radius < 0) {
-      this.y = this.radius;
-      this.velocityY *= -10;
-    }
-    }
-
-   /*  gravity(g) {
-     this.velocityY += g;
-    } */
-
-    wind (w) {
-        this.velocityX += w;
-    }
-
-    draw() {
-        ctx.beginPath();
-        ctx.arc(this.x,this.y,this.radius, 0,Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-        ctx.closePath();
-    }
-}
-
-    function init() {
-            for (let i = 0; i < selectedValue; i++) {
-                particles.push(new Particles());
-            }
-        }
 
 document.addEventListener('mousemove', function(event) {
     mouseX = event.clientX;
@@ -94,46 +66,74 @@ document.addEventListener('mousemove', function(event) {
 
 document.addEventListener("mouseout", function () {
     mouseInside = false;
-})
+});
 
-    function animate() {
-        
-        requestAnimationFrame(animate);
+function calculateWindForce(mouseX,mouseY) {
+    const windDirection = {
+        x: mouseX - canvas.width / 2,
+        y: mouseY - canvas.height / 2
+    };
 
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        particles.forEach(particles => {
-            if(mouseInside) {
-        const dx = mouseX - particles.x;
-        const dy = mouseY - particles.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const attractionFactor = distance < MOUSE_ATTRACTION_DISTANCE ? -1 : 1;
+    const magnitude = Math.sqrt(windDirection.x ** 2 + windDirection.y ** 2);
+    const normalizedWindDirection = {
+        x: windDirection.x / magnitude,
+        y: windDirection.y / magnitude
+    };
 
-        particles.velocityX = attractionFactor * dx / distance;
-        particles.velocityY = attractionFactor * dy / distance;
-        } else if (!isScattering) {
-            isScattering = true;
-            particles.velocityX += randomFloat(-5,5);
-            particles.velocityY += randomFloat(-5,5);
-        }
-        particles.velocityX *= 1;
-        particles.velocityY *= 1;
-        particles.update();
-        particles.draw();
-        });
+    const windMagnitude = 0.01;
 
-        if (mouseInside) {
-        ctx.beginPath();
-        ctx.fillStyle = "blue";
-        ctx.fill();
-        ctx.closePath();
-        }
-        if (!mouseInside) {
-        ctx.beginPath();
-        ctx.fillStyle = "black";
-        ctx.fill();
-        ctx.closePath();
-        }
+    const windForce = {
+        x: normalizedWindDirection.x * windMagnitude,
+        y: normalizedWindDirection.y * windMagnitude
     }
+    return windForce;
+}
 
-init();
+function drawWindDirection(mouseX,mouseY) {
+    const windDirection = {
+        x: mouseX - canvas.width / 2,
+        y: mouseY - canvas.height / 2
+    };
+
+    const angle = Math.atan2(windDirection.y,windDirection.x);
+    const hue = (angle + Math.PI) / (2 * Math.PI);
+
+    ctx.beginPath();
+    ctx.strokeStyle = `hsl(${hue * 360}, 100%, 50%)`;
+    ctx.lineWidth = 2;
+    ctx.moveTo(canvas.width / 2, canvas.height / 2);
+    ctx.lineTo(mouseX,mouseY);
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    particles.forEach(particle => {
+        if (mouseInside) {
+            const windForce = calculateWindForce(mouseX, mouseY);
+            Matter.Body.applyForce(particle, particle.position, windForce);
+        }
+    });
+    draw(particles);
+}
+
+
+function draw(particles) {
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+    particles.forEach(particle => {
+    ctx.beginPath();
+    ctx.arc(particle.position.x, particle.position.y, particle.circleRadius, 0, Math.PI * 2);
+    ctx.fillStyle = particle.color;
+    ctx.fill();
+    ctx.closePath();
+    });
+
+    if(mouseInside) {
+        drawWindDirection(mouseX,mouseY);
+    }
+}
+
 animate();
+init();
