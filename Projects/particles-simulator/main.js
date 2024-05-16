@@ -34,9 +34,9 @@ function init() {
         const particle = Matter.Bodies.circle(
             Math.random()* canvas.width,
             Math.random() * canvas.height,
-            Math.random() * 3 + 1,
-            { restitution: 0.8,
-                friction: 0.001,
+            Math.random() * 2 + 1,
+            { restitution: 0.6,
+                friction: 0.01,
                 frictionAir: 0.01,
                 density: 0.01,
                 color: color
@@ -100,7 +100,7 @@ function calculateWindForce(mouseX,mouseY) {
         y: windDirection.y / magnitude
     };
 
-    const windMagnitude = 0.01;
+    const windMagnitude = 0.0001;
 
     const windForce = {
         x: normalizedWindDirection.x * windMagnitude,
