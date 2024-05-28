@@ -12,7 +12,7 @@
     world.gravity.y = 0;
 
     function createWalls() {
-            const radius = 1;
+            const radius = 10;
         return [
             Matter.Bodies.rectangle(app.screen.width / 2, app.screen.height - radius, app.screen.width, radius * 2, { isStatic: true }),
             Matter.Bodies.rectangle(radius, app.screen.height / 2, radius * 2, app.screen.height, { isStatic: true }),
@@ -25,34 +25,40 @@
     Matter.World.add(world, walls);
 
     const cells = [];
-    const numberOfCells = 100;
+    const numberOfCells = 200;
+
+    const CellTypes = {
+        PREDATOR: 'PREDATOR',
+        PREY: 'PREY',
+        FOOD: 'FOOD'
+    };
 
     const PREDATOR_COLOR = 0xFF0000;
     const PREY_COLOR = 0x0000FF;
     const FOOD_COLOR = 0x00FF00;
 
-    let size = Math.round(Math.random() * 1);
 
-    function addCell(x,y,color) {
+    function addCell(x,y,type) {
+        const size = Math.ceil(Math.random() * 10);
         const graphics = new PIXI.Graphics();
-        graphics.beginFill(color);
+        graphics.beginFill(type === CellTypes.PREDATOR ? PREDATOR_COLOR : type === CellTypes.PREY ? PREY_COLOR : FOOD_COLOR);
         graphics.drawCircle(0,0,size);
         graphics.endFill();
         graphics.x = x;
         graphics.y = y;
         app.stage.addChild(graphics);
 
-    const body = Matter.Bodies.circle(x,y, size, { restitution: 0.001});
+    const body = Matter.Bodies.circle(x,y, size, { restitution: 0.1, label: type});
     Matter.World.add(world, body);
 
-    cells.push({ graphics, body , color, size , age: 0, type: color});
+    cells.push({ graphics, body , type, size, age: 0, consumed: 0});
     }
 
     for (let i = 0; i <numberOfCells; i++) {
-        if (1 <= 10) color = PREDATOR_COLOR;
-        if (i <= 20) color = PREY_COLOR;
-        else color = FOOD_COLOR;
-        addCell(Math.random() * app.screen.width, Math.random() * app.screen.height, color, 10);
+        if (i <= 5) type = CellTypes.PREDATOR;
+        else if (i <= 20) type = CellTypes.PREY;
+        else type = CellTypes.FOOD;
+        addCell(Math.random() * app.screen.width, Math.random() * app.screen.height, type);
     }
 
 
@@ -61,33 +67,43 @@
         const repulsionStrength = 0.05;
         const minDistance = 20;
         const maxForce = 0.001;
+        const epsilon = 0.0001;
 
         for (let i = 0; i < cells.length; i++) {
             for (let j = i + 1; j < cells.length; j++) {
                 const cellA = cells[i].body;
                 const cellB = cells[j].body;
 
-                const distance = Matter.Vector.magnitude(Matter.Vector.sub(cellB.position, cellA.position));
+                const distanceVector = Matter.Vector.sub(cellB.position, cellA.position);
+                const distance = Matter.Vector.magnitude(distanceVector) + epsilon;
+
                 if (distance < minDistance) continue;
-                const delta = Matter.Vector.sub(cellB.position, cellA.position);
-                const direction = Matter.Vector.normalise(delta);
+
+                const direction = Matter.Vector.normalise(distanceVector);
 
                 let forceMagnitude = 0;
 
-                if (cellA.type === PREDATOR_COLOR && cellB.type === PREY_COLOR) {
-                    forceMagnitude = attractionStrength / (distance * distance);
-                } else if (cellA.type === FOOD_COLOR && cellB.type === PREY_COLOR) {
-                    forceMagnitude = -repulsionStrength / (distance * distance);
-                }
-
-                if (cellA.type === PREY_COLOR && cellB.type === FOOD_COLOR) {
-                    forceMagnitude = attractionStrength / (distance * distance);
-                } else if (cellA.type === PREY_COLOR && cellB.type === PREDATOR_COLOR) {
-                    forceMagnitude = -repulsionStrength / (distance * distance);
-                }
-
-                if (cellA.type === FOOD_COLOR || cellB.type === FOOD_COLOR) {
-                    forceMagnitude = 0;
+                switch(cells[i].type) {
+                    case CellTypes.PREDATOR:
+                        switch (cells[j].type) {
+                            case CellTypes.PREY:
+                                forceMagnitude = attractionStrength / (distance * distance);
+                                break;
+                                default:
+                                    forceMagnitude = 0;
+                        }
+                        break;
+                        case CellTypes.PREY:
+                            switch(cells[j].type) {
+                                case CellTypes.FOOD:
+                                    forceMagnitude = attractionStrength / (distance * distance);
+                                    break;
+                                    default:
+                                        forceMagnitude = 0;
+                            }
+                            break;
+                                default:
+                                    forceMagnitude = 0;
                 }
 
                 forceMagnitude = Math.min(forceMagnitude, maxForce);
@@ -101,26 +117,32 @@
     }
 
     function reproduceCells() {
-        const reproductionThreshold = 50;
+        const reproductionThreshold = 100;
         const maxCells = 500;
         const newCells = [];
 
         for (const cell of cells) {
-            if (cell.age > reproductionThreshold && cells.length + newCells.length < maxCells) {
-                const x = cell.body.position.x + (Math.random() * 20 - 10);
-                const y = cell.body.position.y + (Math.random() * 20 - 10);
-                newCells.push({ x,y, color: cell.color, size: cell.size});
-                cell.age = 0;
+            if (cell.consumed >= 3 && cells.length + newCells.length < maxCells) {
+                const x = cell.body.position.x + (Math.random() * 100 - 10);
+                const y = cell.body.position.y + (Math.random() * 100 - 10);
+                newCells.push({ x,y, type: cell.type});
+                cell.consumed = 0;
             }
         }
 
         for (const newCell of newCells) {
-            addCell(newCell.x, newCell.y, newCell.color, newCell.size);
+            addCell(newCell.x, newCell.y, newCell.type);
+        }
+
+        if (cells.length < maxCells) {
+            const foodX = Math.random() * app.screen.width;
+            const foodY = Math.random() * app.screen.height;
+            addCell(foodX, foodY, CellTypes.FOOD);
         }
     }
 
     function updateCellAging() {
-        const maxAge = 500;
+        const maxAge = 1000;
 
         for (let i = cells.length - 1; i >= 0; i--) {
             cells[i].age += 1;
@@ -141,20 +163,30 @@
 
                 const distance = Matter.Vector.magnitude(Matter.Vector.sub(cellB.body.position, cellA.body.position));
 
-                if (distance < 10) {
-                    if (cellA.type === PREDATOR_COLOR && cellB.type === PREY_COLOR) {
-                        app.stage.removeChild(cellB.graphics);
-                        Matter.World.remove(world, cellB.body);
-                        cells.splice(j,1);
-                        cellA.age = 0;
-                        continue;
-                    }
-                    if (cellA.type === PREY_COLOR && cellB.type === FOOD_COLOR) {
-                        app.stage.removeChild(cellB.graphics);
-                        Matter.World.remove(world, cellB.body);
-                        cells.splice(j,1);
-                        cellA.age = 0;
-                        continue;
+                if(distance < 20) {
+                    switch(cellA.type) {
+                        case CellTypes.PREDATOR:
+                            switch (cellB.type) {
+                                 case CellTypes.PREY:
+                                app.stage.removeChild(cellB.graphics);
+                                Matter.World.remove(world, cellB.body);
+                                cells.splice(j,1);
+                                cellA.age = 0;
+                                cellA.consumed++;
+                                break;
+                            }
+                            break;
+                            case CellTypes.PREY:
+                                switch (cellB.type) {
+                                    case CellTypes.FOOD:
+                                app.stage.removeChild(cellB.graphics);
+                                Matter.World.remove(world, cellB.body);
+                                cells.splice(j,1);
+                                cellA.age = 0;
+                                cellA.consumed++;
+                                break;
+                                }
+                                break;
                     }
                 }
             }
@@ -168,6 +200,7 @@
         reproduceCells();
         updateCellAging();
         handleCellInteractions();
+        
 
         for (const cell of cells) {
             cell.graphics.position.set(cell.body.position.x, cell.body.position.y);
