@@ -1,0 +1,47 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: grey;
+}
+div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 600px;
+    height: auto;
+    background-color: aqua;
+}
+
+p {
+    font-size: 2rem;
+    text-decoration: underline rgb(234, 18, 253);
+    padding: 20px;
+}
+
+p:hover {
+    background-color: black;
+    color: gold;
+    font-style: italic;
+    text-decoration: none;
+    transition: all ease-in 0.5s;
+}
+
+button {
+    padding: 10px;
+    margin: 10px;
+    background-color: red;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.5rem;
+}
