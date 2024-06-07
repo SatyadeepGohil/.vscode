@@ -14,111 +14,6 @@ body {
     background-color: grey;
 }
 
-#wrap {
-  width: 100px;
-  height: 100px;
-  top: 0;
-  left: 10px;
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.575);
-  transition-delay: 1.85s;
-  pointer-events: none;
-  filter: hue-rotate(70deg);
-}
- #wrap:nth-of-type(2) {
-  z-index: -1;
-}
-
-input {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  z-index: 999;
-  opacity: 0;
-  cursor: pointer;
-  top: 0;
-  left: 10px;
-}
- input:hover ~ #wrap:before {
-  transition-delay: 2.5s, 2.5s, 0s;
-  letter-spacing: 5px;
-}
- input:checked ~ #wrap {
-  transform: scaleX(0.9);
-}
- input:checked ~ #wrap:before {
-  opacity: 0;
-  transform: translateY(25vh);
-  transition-delay: 0s, 0s, 0s;
-}
- input:checked ~ #wrap:nth-of-type(2) svg path {
-  stroke: #fff;
-}
- input:checked ~ #wrap svg {
-  transition-delay: 0s;
-}
- input:checked ~ #wrap svg:first-of-type {
-  transform: translateY(0px);
-}
- input:checked ~ #wrap svg:first-of-type path {
-  transition-delay: 0.5s, 0.5s;
-}
- input:checked ~ #wrap svg:nth-of-type(2) {
-  transform: translateY(0px) scaleY(-1);
-}
- input:checked ~ #wrap svg:nth-of-type(2) path {
-  transition-delay: 0.5s, 0.5s;
-}
- input:checked ~ #wrap svg:nth-of-type(3) path {
-  stroke-dasharray: 10000px;
-  stroke-dashoffset: 10000px;
-  transition-delay: 1s, 1s;
-}
- input:checked ~ #wrap svg path {
-  stroke-dasharray: 5000px;
-  stroke-dashoffset: -4150px;
-  stroke: yellow;
-}
-
-svg {
-  position: absolute;
-  top: 0;
-  left: 10px;
-  width: 200px;
-  transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.575);
-  transition-delay: 2s;
-}
-svg:first-of-type {
-  transform: translateY(5px);
-}
-svg:nth-of-type(2) {
-  transform: translateY(-6px) scaleY(-1);
-}
-svg:nth-of-type(2) path {
-  transition: stroke-dasharray 1.2s ease-in-out, stroke-dashoffset 1.2s ease-in-out, stroke 1.2s ease-in-out;
-  transition-delay: 0.6s, 0.6s, 0.6s;
-}
-svg:nth-of-type(3) {
-  transform: translateY(25px);
-}
-svg:nth-of-type(3) path {
-  transition: stroke-dasharray 0.25s ease-in-out, stroke-dashoffset 0.25s ease-in-out, stroke 0.25s ease-in-out;
-  transition-delay: 1.8s, 1.8s, 1.8s;
-}
-svg path {
-  stroke: blue;
-  stroke-width: 40px;
-  fill: none;
-  stroke-linecap: round;
-  stroke-dasharray: 4400px;
-  stroke-dashoffset: 4200px;
-  transition: stroke-dasharray 1.5s ease-in-out, stroke-dashoffset 1.5s ease-in-out, stroke 1.5s ease-in-out;
-}
-
-
 #quote-container {
     display: flex;
     flex-wrap: wrap;
@@ -178,16 +73,18 @@ svg path {
 
 #add-quote-btn {
     display: block;
-    margin: 20px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 20px;
     padding: 10px 20px;
-    font-size: 16px;
+    font-weight: 600;
+    font-size: 20px;
     cursor: pointer;
     border: none;
-    background-color: #28a745;
-    color: #fff;
+    background-color: #21f854;
+    color: rgb(238, 88, 50);
     transition: background-color 0.3s;
 }
 
 #add-quote-btn:hover {
-    background-color: #218838;
+    background-color: #2bf09e;
 }
