@@ -1,0 +1,19 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Black Ops One', sans-serif;
+    text-align: center;
+}
+
+h1 {
+    margin: 20px;
+}
+
+canvas {
+    height: 500px;
+    width: 500px;
+}
