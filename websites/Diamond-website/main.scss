@@ -1,0 +1,181 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: 'Roxie Rossa';
+    src: url(./fonts/Roxie\ rossa.otf);
+    src: url(./fonts/Roxie\ rossa.ttf);
+    src: url(./fonts/Roxie\ rossa.woff);
+    src: local('Roxie Rossa'), url(./fonts/Roxie\ rossa.ttf);
+}
+
+body {
+    font-family: 'Roxie Rossa';
+    background-color: #FFEBE6;
+}
+
+header {
+    margin: 20px;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    #socials {
+        display: flex;
+        justify-content: space-around;
+        p {
+            margin: 10px;
+            font-family: 'Questrial';
+        }
+    }
+    #company-logo {
+        font-size: 2rem;
+        text-decoration: underline;
+    }
+    #personal-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        a{
+            margin: 10px;
+        }
+        button {
+            border: none;
+            font-size: 1em;
+            width: 150px;
+            margin: 10px;
+            padding: 10px;
+            background-color: #5877C7;
+            border-radius: 20px;
+            color: white;
+            font-weight: 800;
+        }
+        button:hover {
+            background-color: #7497ee;
+            box-shadow: 0 2px 3px 3px rgb(168, 163, 163);
+        }
+    }
+}
+
+#gem-display {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    height: auto;
+    margin-top: 100px;
+    div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        font-size: 4rem;
+        
+        img {
+            position: absolute;
+            top: 50%;
+            opacity: 0;
+        }
+    }
+    #diamond:hover {
+        p {
+            color: white;
+        }
+        #background-square {
+                position: absolute;
+                top: 50%;
+                background-color: #FFC4B1;
+                width: 300px;
+                height: 200px;
+                z-index: -1;
+                transform: rotate(90deg);
+                transition: all ease-in 0.5s;
+            }
+            img {
+                opacity: 1;
+                transition: all ease-in 0.5s;
+            }
+    }
+    #heart:hover {
+        p {
+            color: white;
+        }
+        #background-square {
+                position: absolute;
+                top: 50%;
+                background-color: #DF2935;
+                width: 300px;
+                height: 200px;
+                z-index: -1;
+                transform: rotate(80deg);
+                transition: all ease-in 0.5s;
+            }
+            img {
+                opacity: 1;
+                transition: all ease-in 0.5s;
+            }
+    }
+    #emerald:hover {
+        p {
+            color: white;
+        }
+        #background-square {
+                position: absolute;
+                top: 50%;
+                background-color: #7CFEF0;
+                width: 300px;
+                height: 200px;
+                z-index: -1;
+                transform: rotate(-80deg);
+                transition: all ease-in 0.5s;
+            }
+            img {
+                opacity: 1;
+                transition: all ease-in 0.5s;
+            }
+    }
+    img {
+        width: 284x;
+        height: 213px;
+    }
+}
+
+#diamond-setting {
+    display: flex;
+    height: auto;
+    margin-top: 300px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.5rem;
+    #diamond-heading {
+        display: flex;
+        margin: 50px;
+        p {
+            margin: 10px;
+            font-size: 2rem;
+        }
+    }
+    #diamond-scroll {
+        display: flex;
+        
+        gap: 1rem;
+        img {
+            width: 100px;
+            height: 100px;
+        }
+        div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+                background-color: white;
+                border-radius: 50%;
+                height: 250px;
+                width: 150px;
+            }
+    }
+}
