@@ -1,0 +1,72 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+h1 {
+    margin: 10px;
+    letter-spacing: 10px;
+}
+
+#underline {
+    width: 70px;
+    height: 3px;
+    background-color: orange;
+    margin-bottom: 10px;
+}
+
+#menu {
+    width: 500px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+}
+
+#menu button {
+    padding: 10px;
+    border: 1px solid orange;
+    border-radius: 10px;
+    width: 80px;
+}
+
+button:active { 
+            transform: scale(0.98); 
+            box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24); 
+}
+
+section {
+    width: 800px;
+    height: auto;
+    background-color: rgb(228, 220, 220);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#food {
+    background-color: aqua;
+    width: 300px;
+    height: 300px;
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#food img {
+    width: 100px;
+    height: 100px;
+}
+
