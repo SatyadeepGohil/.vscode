@@ -142,16 +142,43 @@ const foods = [
 ];
 
 let menu = document.getElementById('food-display');
-for (let i = 0; i < foods.length; i++) {
-    let foodItem = foods[i];
-     menu.innerHTML += `<div id="food">
-                    <img src="${foodItem.image}">
-                    <div>
-                    <span id="food-details">
-                    <p>${foodItem.name}</p>
-                    <p>${foodItem.price}</p>
-                    </span>
-                    <p>${foodItem.description}</p>
-                    </div>
-                    </div>`;
+let All = document.getElementById('all');
+let Breakfast = document.getElementById('breakfast');
+let Lunch = document.getElementById('lunch');
+let Dinner = document.getElementById('dinner');
+let Shakes = document.getElementById('shakes');
+let Dessert = document.getElementById('dessert');
+
+function filterByCategory(category) {
+    if (category === 'All') {
+        displayFoodItems(foods);
+    } else {
+        const filteredFoods = foods.filter(foodItem => foodItem.category === category);
+        displayFoodItems(filteredFoods);
+    }
 }
+
+All.addEventListener('click', () => filterByCategory('All'));
+Breakfast.addEventListener('click', () => filterByCategory('Breakfast'));
+Lunch.addEventListener('click', () => filterByCategory('Lunch'));
+Dinner.addEventListener('click', () => filterByCategory('Dinner'));
+Shakes.addEventListener('click', () => filterByCategory('Shakes'));
+Dessert.addEventListener('click', () => filterByCategory('Dessert'));
+
+function displayFoodItems(filteredFoods) {
+    menu.innerHTML = '';
+    filteredFoods.forEach(foodItem => {
+        menu.innerHTML += `<div id="food">
+<img src="${foodItem.image}">
+<div>
+<span id="food-details">
+<p id="name">${foodItem.name}</p>
+<p id="price">${foodItem.price}</p>
+</span>
+<p id="description">${foodItem.description}</p>
+</div>
+</div>`;
+    });
+}
+
+filterByCategory('All')
